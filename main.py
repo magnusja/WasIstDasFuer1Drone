@@ -100,7 +100,8 @@ def display(screen, clock, drone):
 def display_cv(drone):
     pixelarray = drone.get_image()
     if pixelarray is not None:
-        cv2.imshow('image', pixelarray)
+        image = cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
+        cv2.imshow('image', image)
         cv2.waitKey(1)
 
 

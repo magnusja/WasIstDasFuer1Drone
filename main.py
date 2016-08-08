@@ -1,6 +1,8 @@
 import logging
 
+import cv2
 import pygame
+
 import libardrone.libardrone
 
 W, H = 320, 240
@@ -17,7 +19,7 @@ def handle_controls(drone, event):
         drone.land()
     # emergency
     elif event.key == pygame.K_BACKSPACE:
-        drone.reset()
+         drone.reset()
     # forward / backward
     elif event.key == pygame.K_w:
         drone.move_forward()
@@ -76,39 +78,45 @@ def handle_events(drone):
 
 
 def display(screen, clock, drone):
-    surface = pygame.image.fromstring(drone.image, (W, H), 'RGB')
-    hud_color = (255, 0, 0) if drone.navdata.get('drone_state', dict()).get('emergency_mask', 1) else (10, 10, 255)
-    bat = drone.navdata.get(0, dict()).get('battery', 0)
-    f = pygame.font.Font(None, 20)
-    hud = f.render('Battery: %i%%' % bat, True, hud_color)
-    screen.blit(surface, (0, 0))
-    screen.blit(hud, (10, 10))
+    # print pygame.image
+    pixelarray = drone.get_image()
+    if pixelarray is not None:
+        surface = pygame.surfarray.make_surface(pixelarray)
+        rotsurface = pygame.transform.rotate(surface, 90)
+        screen.blit(rotsurface, (0, 0))
 
-    pygame.display.flip()
-    clock.tick(50)
-    pygame.display.set_caption("FPS: %.2f" % clock.get_fps())
+        hud_color = (255, 0, 0) if drone.navdata.get('drone_state', dict()).get('emergency_mask', 1) else (10, 10, 255)
+        bat = drone.navdata.get(0, dict()).get('battery', 0)
+        f = pygame.font.Font(None, 20)
+        hud = f.render('Battery: %i%%' % bat, True, hud_color)
+        screen.blit(surface, (0, 0))
+        screen.blit(hud, (10, 10))
+
+        pygame.display.flip()
+        clock.tick(50)
+        pygame.display.set_caption("FPS: %.2f" % clock.get_fps())
 
 
-def display_opencv():
-    pass
+def display_cv(drone):
+    pixelarray = drone.get_image()
+    if pixelarray is not None:
+        cv2.imshow('image', pixelarray)
+        cv2.waitKey(1)
 
 
 def main():
     logger.info('Starting up')
     pygame.init()
-    screen = pygame.display.set_mode((W, H))
-    drone = libardrone.ARDrone()
+    drone = libardrone.ARDrone(True)
     drone.reset()
-    clock = pygame.time.Clock()
     running = True
 
     while running:
         running = handle_events(drone)
         try:
-            display(screen, clock, drone)
+            display_cv(drone)
         except Exception as e:
-            #logger.error('Error displaying %s', e)
-            pass
+            logger.error('Error displaying %s', e)
 
     logger.info('Shutting down...')
     drone.halt()

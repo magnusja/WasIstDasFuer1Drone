@@ -1,0 +1,3 @@
+[submodule "libardrone"]
+	path = libardrone
+	url = https://github.com/mjdev/python-ardrone

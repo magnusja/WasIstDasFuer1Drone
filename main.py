@@ -1,7 +1,7 @@
 import logging
 
 import pygame
-import libardrone
+import libardrone.libardrone
 
 W, H = 320, 240
 
@@ -89,6 +89,10 @@ def display(screen, clock, drone):
     pygame.display.set_caption("FPS: %.2f" % clock.get_fps())
 
 
+def display_opencv():
+    pass
+
+
 def main():
     logger.info('Starting up')
     pygame.init()
@@ -103,7 +107,8 @@ def main():
         try:
             display(screen, clock, drone)
         except Exception as e:
-            logger.error('Error displaying', e)
+            #logger.error('Error displaying %s', e)
+            pass
 
     logger.info('Shutting down...')
     drone.halt()

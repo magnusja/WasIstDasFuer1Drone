@@ -16,7 +16,7 @@ def handle_events(drone):
     if key == 27:  # ESC
         return False
     # takeoff / land
-    if key == 13:  # return
+    elif key == 13:  # return
         drone.takeoff()
     elif key == 32:  # space
         drone.land()
@@ -34,14 +34,14 @@ def handle_events(drone):
     elif key == ord('d'):
         drone.move_right()
     # up / down
-    elif key == 2490368:  # up
+    elif key == 63232:  # up
         drone.move_up()
-    elif key == 2621440:  # down
+    elif key == 63233:  # down
         drone.move_down()
     # turn left / turn right
-    elif key == 2424832:  # left
+    elif key == 63234:  # left
         drone.turn_left()
-    elif key == 2555904: # right
+    elif key == 63235:  # right
         drone.turn_right()
     # speed
     elif key == ord('1'):
@@ -64,6 +64,8 @@ def handle_events(drone):
         drone.speed = 0.9
     elif key == ord('0'):
         drone.speed = 1.0
+    elif key == -1:
+        drone.hover()
 
     return True
 

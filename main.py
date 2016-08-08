@@ -1,7 +1,6 @@
 import logging
 
 import cv2
-import pygame
 
 import libardrone.libardrone
 
@@ -11,113 +10,82 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-def handle_controls(drone, event):
+def handle_events(drone):
+    key = cv2.waitKey(1)
+
+    if key == 27:  # ESC
+        return False
     # takeoff / land
-    if event.key == pygame.K_RETURN:
+    if key == 13:  # return
         drone.takeoff()
-    elif event.key == pygame.K_SPACE:
+    elif key == 32:  # space
         drone.land()
     # emergency
-    elif event.key == pygame.K_BACKSPACE:
-         drone.reset()
+    elif key == 127:  # backspace
+        drone.reset()
     # forward / backward
-    elif event.key == pygame.K_w:
+    elif key == ord('w'):
         drone.move_forward()
-    elif event.key == pygame.K_s:
+    elif key == ord('s'):
         drone.move_backward()
     # left / right
-    elif event.key == pygame.K_a:
+    elif key == ord('a'):
         drone.move_left()
-    elif event.key == pygame.K_d:
+    elif key == ord('d'):
         drone.move_right()
     # up / down
-    elif event.key == pygame.K_UP:
+    elif key == 2490368:  # up
         drone.move_up()
-    elif event.key == pygame.K_DOWN:
+    elif key == 2621440:  # down
         drone.move_down()
     # turn left / turn right
-    elif event.key == pygame.K_LEFT:
+    elif key == 2424832:  # left
         drone.turn_left()
-    elif event.key == pygame.K_RIGHT:
+    elif key == 2555904: # right
         drone.turn_right()
     # speed
-    elif event.key == pygame.K_1:
+    elif key == ord('1'):
         drone.speed = 0.1
-    elif event.key == pygame.K_2:
+    elif key == ord('2'):
         drone.speed = 0.2
-    elif event.key == pygame.K_3:
+    elif key == ord('3'):
         drone.speed = 0.3
-    elif event.key == pygame.K_4:
+    elif key == ord('4'):
         drone.speed = 0.4
-    elif event.key == pygame.K_5:
+    elif key == ord('5'):
         drone.speed = 0.5
-    elif event.key == pygame.K_6:
+    elif key == ord('6'):
         drone.speed = 0.6
-    elif event.key == pygame.K_7:
+    elif key == ord('7'):
         drone.speed = 0.7
-    elif event.key == pygame.K_8:
+    elif key == ord('8'):
         drone.speed = 0.8
-    elif event.key == pygame.K_9:
+    elif key == ord('9'):
         drone.speed = 0.9
-    elif event.key == pygame.K_0:
+    elif key == ord('0'):
         drone.speed = 1.0
-
-
-def handle_events(drone):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            return False
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                return False
-
-            handle_controls(drone, event)
 
     return True
 
 
-def display(screen, clock, drone):
-    # print pygame.image
-    pixelarray = drone.get_image()
-    if pixelarray is not None:
-        surface = pygame.surfarray.make_surface(pixelarray)
-        rotsurface = pygame.transform.rotate(surface, 90)
-        screen.blit(rotsurface, (0, 0))
-
-        hud_color = (255, 0, 0) if drone.navdata.get('drone_state', dict()).get('emergency_mask', 1) else (10, 10, 255)
-        bat = drone.navdata.get(0, dict()).get('battery', 0)
-        f = pygame.font.Font(None, 20)
-        hud = f.render('Battery: %i%%' % bat, True, hud_color)
-        screen.blit(surface, (0, 0))
-        screen.blit(hud, (10, 10))
-
-        pygame.display.flip()
-        clock.tick(50)
-        pygame.display.set_caption("FPS: %.2f" % clock.get_fps())
-
-
 def display_cv(drone):
     pixelarray = drone.get_image()
+    battery = drone.navdata.get(0, dict()).get('battery', 0)
     if pixelarray is not None:
         image = cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
+        cv2.putText(image, 'Battery %f' % battery, (100, 100), cv2.FONT_HERSHEY_PLAIN, 1, (0,255,0), 2)
         cv2.imshow('image', image)
-        cv2.waitKey(1)
 
 
 def main():
     logger.info('Starting up')
-    pygame.init()
     drone = libardrone.ARDrone(True)
     drone.reset()
     running = True
 
     while running:
+        display_cv(drone)
         running = handle_events(drone)
-        try:
-            display_cv(drone)
-        except Exception as e:
-            logger.error('Error displaying %s', e)
 
     logger.info('Shutting down...')
     drone.halt()

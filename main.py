@@ -1,6 +1,7 @@
 import logging
 
 import cv2
+from datetime import datetime
 
 import libardrone.libardrone
 
@@ -8,10 +9,23 @@ W, H = 320, 240
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+last_key_press = datetime.now()
+
+
+def millis_interval(start, end):
+    """start and end are datetime instances"""
+    diff = end - start
+    millis = diff.days * 24 * 60 * 60 * 1000
+    millis += diff.seconds * 1000
+    millis += diff.microseconds / 1000
+    return millis
 
 
 def handle_events(drone):
-    key = cv2.waitKey(1)
+    key = cv2.waitKey(100)
+
+    if key != -1:
+        last_key_press = datetime.now()
 
     if key == 27:  # ESC
         return False
@@ -64,7 +78,8 @@ def handle_events(drone):
         drone.speed = 0.9
     elif key == ord('0'):
         drone.speed = 1.0
-    elif key == -1:
+    elif key == -1 and millis_interval(datetime.now(), last_key_press) > 500:
+        last_key_press = datetime.now()
         drone.hover()
 
     return True

@@ -4,7 +4,9 @@ import cv2
 from datetime import datetime
 
 import libardrone.libardrone
-from cvface.detect import detect_faces
+from cvface.detect import FaceDetector
+from overlay.battery import BatteryOverlay
+from pipeline import Pipeline
 
 W, H = 320, 240
 
@@ -87,13 +89,11 @@ def handle_events(drone):
     return True
 
 
-def display_cv(drone):
+def display_cv(drone, pipeline):
     pixelarray = drone.get_image()
-    battery = drone.navdata.get(0, dict()).get('battery', 0)
     if pixelarray is not None:
         image = cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
-        cv2.putText(image, 'Battery %f' % battery, (100, 100), cv2.FONT_HERSHEY_PLAIN, 1, (0,255,0), 2)
-        detect_faces(image)
+        pipeline.run(image)
         cv2.imshow('image', image)
 
 
@@ -103,8 +103,11 @@ def main():
     drone.reset()
     running = True
 
+    pipeline = Pipeline([BatteryOverlay(drone),
+                         FaceDetector()])
+
     while running:
-        display_cv(drone)
+        display_cv(drone, pipeline)
         running = handle_events(drone)
 
     logger.info('Shutting down...')

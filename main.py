@@ -8,8 +8,6 @@ from cvface.detect import FaceDetector
 from overlay.battery import BatteryOverlay
 from pipeline import Pipeline
 
-W, H = 320, 240
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 last_key_press = datetime.now()

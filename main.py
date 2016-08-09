@@ -4,6 +4,7 @@ import cv2
 from datetime import datetime
 
 import libardrone.libardrone
+from cvface.detect import detect_faces
 
 W, H = 320, 240
 
@@ -22,6 +23,7 @@ def millis_interval(start, end):
 
 
 def handle_events(drone):
+    global last_key_press
     key = cv2.waitKey(100)
 
     if key != -1:
@@ -91,6 +93,7 @@ def display_cv(drone):
     if pixelarray is not None:
         image = cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
         cv2.putText(image, 'Battery %f' % battery, (100, 100), cv2.FONT_HERSHEY_PLAIN, 1, (0,255,0), 2)
+        detect_faces(image)
         cv2.imshow('image', image)
 
 

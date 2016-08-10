@@ -4,8 +4,10 @@ import cv2
 from datetime import datetime
 
 import libardrone.libardrone
+from classify.face import FaceClassifier
 from cvface.detect import FaceDetector
 from overlay.battery import BatteryOverlay
+from pid.controller import PIDController
 from pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
@@ -103,7 +105,9 @@ def main():
     running = True
 
     pipeline = Pipeline([BatteryOverlay(drone),
-                         FaceDetector()])
+                         FaceDetector(),
+                         FaceClassifier(),
+                         PIDController(drone)])
 
     while running:
         display_cv(drone, pipeline)

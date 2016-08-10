@@ -8,7 +8,7 @@ class FaceDetector(object):
     def __init__(self):
         self.faceCascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__), 'haarcascade_frontalface_alt.xml'))
 
-    def run(self, input_image, output_image):
+    def run(self, input_image, output_image, exec_result=None):
         return self.detect_faces(input_image, output_image)
 
     def detect_faces(self, input_image, output_image):

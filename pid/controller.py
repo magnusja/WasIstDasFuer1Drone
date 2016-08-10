@@ -4,7 +4,6 @@ import math
 
 from libardrone import at_pcmd
 
-
 class PIDController(object):
     def __init__(self, kp=0.15, kd=0.25, ki=0.1):
         self.kp = kp

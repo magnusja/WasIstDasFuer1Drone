@@ -1,9 +1,7 @@
 import cv2
 import sys
-import os
 
 from cvface.detect import FaceDetector
-
 
 
 def main():
@@ -11,22 +9,25 @@ def main():
     output_dir = sys.argv[2]
 
     f = FaceDetector()
+    vidcap = cv2.VideoCapture(input_file)
+    count = 0
 
-    running = True
-    while running:
-        vidcap = cv2.VideoCapture(input_file)
-        success,image = vidcap.read()
-        count = 0
-        success = True
-        while success:
-            success,image = vidcap.read()
-            output_image = image.copy()
-            faces = f.run(image, output_image)
-            (x,y,w,h) = faces[0]
-            cropped_image = image[y:y+h,x:x+w]
-            print 'Read a new frame: ', success
-            cv2.imwrite(output_dir + "frame%d.jpg" % count, cropped_image)     # save frame as JPEG file
-            count += 1
+    success = True
+    while success:
+        count += 1
+        success, image = vidcap.read()
+        if count % 2 == 1:
+            continue
+
+        output_image = image.copy()
+        faces = f.run(image, output_image)
+        if len(faces) == 0:
+            continue
+
+        (x,y,w,h) = faces[0]
+        cropped_image = image[y:y+h,x:x+w]
+        print 'Read a new frame: ', success
+        cv2.imwrite(output_dir + "/frame%d.jpg" % count, cropped_image)     # save frame as JPEG file
 
 if __name__ == '__main__':
     main()

@@ -3,8 +3,8 @@ from datetime import datetime
 from libardrone import at_pcmd
 
 
-class PIDController():
-    def __init__(self, kp=0.1, kd=0.25, ki=0.15):
+class PIDController(object):
+    def __init__(self, kp=0.15, kd=0.25, ki=0.1):
         self.kp = kp
         self.kd = kd
         self.ki = ki
@@ -32,6 +32,9 @@ class PIDControllerExecutor(object):
         self.x_pid = PIDController()
         self.x_max = PIDController().tick(self.width, self.middle_x)
 
+        self.y_pid = PIDController(kp=0.1, kd=0.2, ki=0.1)
+        self.y_max = PIDController().tick(self.height, self.middle_y)
+
         self.enabled = False
 
     def millis_interval(self, start, end):
@@ -55,6 +58,7 @@ class PIDControllerExecutor(object):
         face_middle_y = face_y + face_h / 2
 
         u_face_x = self.x_pid.tick(face_middle_x, self.middle_x) / self.x_max
-        print u_face_x
+        u_face_y = self.x_pid.tick(face_middle_y, self.middle_y) / self.y_max
+        print u_face_x, u_face_y
 
-        self.drone.at(at_pcmd, True, 0, 0, 0, u_face_x * 0.6)
+        self.drone.at(at_pcmd, True, 0, 0, u_face_y * -0.8, u_face_x * 0.6)

@@ -5,6 +5,6 @@ class BatteryOverlay(object):
     def __init__(self, drone):
         self.drone = drone
 
-    def run(self, input):
+    def run(self, input_image, output_image):
         battery = self.drone.navdata.get(0, dict()).get('battery', 0)
-        cv2.putText(input, 'Battery %f' % battery, (10, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0,255,0), 2)
+        cv2.putText(output_image, 'Battery %f' % battery, (15, 15), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)

@@ -5,9 +5,7 @@ import random
 import string
 
 import sys
-import urllib2
 from functools import partial
-from io import StringIO
 
 import multiprocessing
 import requests
@@ -33,7 +31,7 @@ def read_txt(file):
             result.append({'url': tokens[1],
                            'box': box})
 
-            if len(result) > 150:
+            if len(result) > 100:
                 break
 
     return result

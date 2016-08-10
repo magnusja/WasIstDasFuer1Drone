@@ -91,8 +91,9 @@ def display_cv(drone, pipeline):
     pixelarray = drone.get_image()
     if pixelarray is not None:
         image = cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
-        pipeline.run(image)
-        cv2.imshow('image', image)
+        output_image = image.copy()
+        pipeline.run(image, output_image)
+        cv2.imshow('image', output_image)
 
 
 def main():

@@ -10,7 +10,6 @@ def main():
     input_file = sys.argv[1]
     output_dir = sys.argv[2]
 
-
     f = FaceDetector()
 
     running = True

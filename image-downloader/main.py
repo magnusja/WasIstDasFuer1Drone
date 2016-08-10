@@ -6,8 +6,10 @@ import string
 
 import sys
 import urllib2
+from functools import partial
 from io import StringIO
 
+import multiprocessing
 import requests
 from PIL import Image
 from io import BytesIO
@@ -31,22 +33,24 @@ def read_txt(file):
             result.append({'url': tokens[1],
                            'box': box})
 
+            if len(result) > 150:
+                break
+
     return result
 
 
-def crop_images(images, output_dir):
-    for i in images:
-        try:
-            response = requests.get(i['url'])
-            image = Image.open(BytesIO(response.content))
-            image = image.crop(i['box'])
-            image.save(os.path.join(output_dir, ''.join(random.choice(string.hexdigits) for _ in range(12))) + '.png', format='png')
-        except IOError as e:
-            logger.error(e)
+def crop_image(i, output_dir):
+    try:
+        response = requests.get(i['url'])
+        image = Image.open(BytesIO(response.content))
+        image = image.crop(i['box'])
+        image.save(os.path.join(output_dir, ''.join(random.choice(string.hexdigits) for _ in range(12))) + '.png', format='png')
+    except IOError as e:
+        logger.error(e)
 
 
 def main():
-    input_file = sys.argv[1]
+    input_dir = sys.argv[1]
     output_dir = sys.argv[2]
 
     if not os.path.exists(output_dir):
@@ -56,10 +60,17 @@ def main():
         for f in filelist:
             os.remove(os.path.join(output_dir, f))
 
-    images = read_txt(input_file)
+    filelist = [f for f in os.listdir(input_dir) if f.endswith('.txt')]
+
+    images = list()
+    for f in filelist:
+        logger.info('Reading file %s', f)
+        images.extend(read_txt(os.path.join(input_dir, f)))
+
     logger.info('Found %d images' % len(images))
 
-    crop_images(images, output_dir)
+    pool = multiprocessing.Pool(processes=64)
+    pool.map(partial(crop_image, output_dir=output_dir), images)
 
 
 if __name__ == '__main__':

@@ -1,20 +1,58 @@
+from datetime import datetime
 
-class PIDController(object):
+from libardrone import at_pcmd
+
+
+class PIDController():
+    def __init__(self, kp=0.1, kd=0, ki=0):
+        self.kp = kp
+        self.kd = kd
+        self.ki = ki
+        self.last_error = 0
+
+    def tick(self, current, desired):
+        error = desired - current
+        result = self.kp * error + \
+                 self.ki * (self.last_error + error) + \
+                 self.kd * (error - self.last_error)
+
+        return result
+
+
+class PIDControllerExecutor(object):
     def __init__(self, drone):
         self.drone = drone
+        self.timestamp = datetime.now()
+
+        self.height, self.width, _ = self.drone.get_image().shape
+        self.middle_x = self.width / 2
+        self.middle_y = self.height / 2
+
+        self.x_pid = PIDController()
+        self.x_max = PIDController().tick(self.width, self.middle_x)
+
+        self.enabled = False
+
+    def millis_interval(self, start, end):
+        """start and end are datetime instances"""
+        diff = end - start
+        millis = diff.days * 24 * 60 * 60 * 1000
+        millis += diff.seconds * 1000
+        millis += diff.microseconds / 1000
+        return millis
 
     def run(self, input_image, output_image, face):
-        if face is None:
+        if not self.enabled:
             return
 
-        height, width, _ = input_image.shape
-        middle_x = width / 2
-        middle_y = height / 2
+        if face is None:
+            return
 
         face_x, face_y, face_w, face_h = face
         face_middle_x = face_x + face_w / 2
         face_middle_y = face_y + face_h / 2
 
-        delta_x = middle_x - face_middle_x
-        delta_y = middle_y - face_middle_y
+        u_face_x = self.x_pid.tick(face_middle_x, self.middle_x) / self.x_max
+        print u_face_x
 
+        self.drone.at(at_pcmd, True, 0, 0, 0, u_face_x * 0.1)

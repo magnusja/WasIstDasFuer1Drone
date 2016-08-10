@@ -7,12 +7,11 @@ import libardrone.libardrone
 from classify.face import FaceClassifier
 from cvface.detect import FaceDetector
 from overlay.battery import BatteryOverlay
-from pid.controller import PIDController
+from pid.controller import PIDControllerExecutor
 from pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
-last_key_press = datetime.now()
 
 
 def millis_interval(start, end):
@@ -24,12 +23,11 @@ def millis_interval(start, end):
     return millis
 
 
-def handle_events(drone):
-    global last_key_press
-    key = cv2.waitKey(100)
+def handle_events(drone, pid):
+    key = cv2.waitKey(10)
 
     if key != -1:
-        last_key_press = datetime.now()
+        pid.enabled = False
 
     if key == 27:  # ESC
         return False
@@ -82,9 +80,8 @@ def handle_events(drone):
         drone.speed = 0.9
     elif key == ord('0'):
         drone.speed = 1.0
-    elif key == -1 and millis_interval(datetime.now(), last_key_press) > 500:
-        last_key_press = datetime.now()
-        drone.hover()
+    elif key == ord('u'):
+        pid.enabled = True
 
     return True
 
@@ -104,14 +101,16 @@ def main():
     drone.reset()
     running = True
 
+    pid = PIDControllerExecutor(drone)
+
     pipeline = Pipeline([BatteryOverlay(drone),
                          FaceDetector(),
                          FaceClassifier(),
-                         PIDController(drone)])
+                         pid])
 
     while running:
         display_cv(drone, pipeline)
-        running = handle_events(drone)
+        running = handle_events(drone, pid)
 
     logger.info('Shutting down...')
     drone.halt()

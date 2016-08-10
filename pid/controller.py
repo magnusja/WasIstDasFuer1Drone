@@ -4,7 +4,7 @@ from libardrone import at_pcmd
 
 
 class PIDController():
-    def __init__(self, kp=0.1, kd=0, ki=0):
+    def __init__(self, kp=0.1, kd=0.25, ki=0.15):
         self.kp = kp
         self.kd = kd
         self.ki = ki
@@ -15,6 +15,7 @@ class PIDController():
         result = self.kp * error + \
                  self.ki * (self.last_error + error) + \
                  self.kd * (error - self.last_error)
+        self.last_error = error
 
         return result
 
@@ -46,6 +47,7 @@ class PIDControllerExecutor(object):
             return
 
         if face is None:
+            self.drone.hover()
             return
 
         face_x, face_y, face_w, face_h = face
@@ -55,4 +57,4 @@ class PIDControllerExecutor(object):
         u_face_x = self.x_pid.tick(face_middle_x, self.middle_x) / self.x_max
         print u_face_x
 
-        self.drone.at(at_pcmd, True, 0, 0, 0, u_face_x * 0.1)
+        self.drone.at(at_pcmd, True, 0, 0, 0, u_face_x * 0.6)

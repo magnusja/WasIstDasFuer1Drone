@@ -7,34 +7,26 @@ from cvface.detect import FaceDetector
 
 
 def main():
-    #input_file = sys.argv[1]
-    #output_dir = sys.argv[2]
-    output_dir = "/"
+    input_file = sys.argv[1]
+    output_dir = sys.argv[2]
+
 
     f = FaceDetector()
 
     running = True
     while running:
-        vidcap = cv2.VideoCapture("/media/jakob/data/Projects/wasistdasfuer1drone/wasistdasfuer1drone.git/small.mp4")
-
+        vidcap = cv2.VideoCapture(input_file)
         success,image = vidcap.read()
-
-        #cv2.imshow("image",image)
-
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-
         count = 0
         success = True
         while success:
             success,image = vidcap.read()
-
-
-            #output_image = image.copy()
-            faces = f.run(image, image)
-            cropped_image = image[faces]
+            output_image = image.copy()
+            faces = f.run(image, output_image)
+            (x,y,w,h) = faces[0]
+            cropped_image = image[y:y+h,x:x+w]
             print 'Read a new frame: ', success
-            cv2.imwrite(output_dir + "/frame%d.jpg" % count, cropped_image)     # save frame as JPEG file
+            cv2.imwrite(output_dir + "frame%d.jpg" % count, cropped_image)     # save frame as JPEG file
             count += 1
 
 if __name__ == '__main__':

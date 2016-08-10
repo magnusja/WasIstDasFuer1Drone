@@ -25,6 +25,7 @@ def millis_interval(start, end):
 
 def handle_events(drone, pid):
     key = cv2.waitKey(10)
+    #print key
 
     if key != -1:
         pid.enabled = False
@@ -32,9 +33,9 @@ def handle_events(drone, pid):
     if key == 27:  # ESC
         return False
     # takeoff / land
-    elif key == 13:  # return
+    elif key == 13 or key == 1048586:  # return
         drone.takeoff()
-    elif key == 32:  # space
+    elif key == 32 or key == 1048608:  # space
         drone.land()
     # emergency
     elif key == 127:  # backspace
@@ -80,7 +81,7 @@ def handle_events(drone, pid):
         drone.speed = 0.9
     elif key == ord('0'):
         drone.speed = 1.0
-    elif key == ord('u'):
+    elif key == ord('u') or key == 1048693:
         pid.enabled = True
 
     return True

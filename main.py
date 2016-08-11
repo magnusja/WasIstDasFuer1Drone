@@ -3,6 +3,8 @@ import logging
 import cv2
 from datetime import datetime
 
+import pygame
+
 import libardrone.libardrone
 from classify.face import FaceClassifier
 from cvface.detect import FaceDetector
@@ -14,75 +16,74 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-def millis_interval(start, end):
-    """start and end are datetime instances"""
-    diff = end - start
-    millis = diff.days * 24 * 60 * 60 * 1000
-    millis += diff.seconds * 1000
-    millis += diff.microseconds / 1000
-    return millis
+def handle_controls(drone, event, pid):
+
+    # takeoff / land
+    if event.key == pygame.K_RETURN:
+        drone.takeoff()
+    elif event.key == pygame.K_SPACE:
+        drone.land()
+    # emergency
+    elif event.key == pygame.K_BACKSPACE:
+         drone.reset()
+    # forward / backward
+    elif event.key == pygame.K_w:
+        drone.move_forward()
+    elif event.key == pygame.K_s:
+        drone.move_backward()
+    # left / right
+    elif event.key == pygame.K_a:
+        drone.move_left()
+    elif event.key == pygame.K_d:
+        drone.move_right()
+    # up / down
+    elif event.key == pygame.K_UP:
+        drone.move_up()
+    elif event.key == pygame.K_DOWN:
+        drone.move_down()
+    # turn left / turn right
+    elif event.key == pygame.K_LEFT:
+        drone.turn_left()
+    elif event.key == pygame.K_RIGHT:
+        drone.turn_right()
+    # speed
+    elif event.key == pygame.K_1:
+        drone.speed = 0.1
+    elif event.key == pygame.K_2:
+        drone.speed = 0.2
+    elif event.key == pygame.K_3:
+        drone.speed = 0.3
+    elif event.key == pygame.K_4:
+        drone.speed = 0.4
+    elif event.key == pygame.K_5:
+        drone.speed = 0.5
+    elif event.key == pygame.K_6:
+        drone.speed = 0.6
+    elif event.key == pygame.K_7:
+        drone.speed = 0.7
+    elif event.key == pygame.K_8:
+        drone.speed = 0.8
+    elif event.key == pygame.K_9:
+        drone.speed = 0.9
+    elif event.key == pygame.K_0:
+        drone.speed = 1.0
+    elif event.key == pygame.K_u:
+        pid.enabled = True
 
 
 def handle_events(drone, pid):
-    key = cv2.waitKey(10)
-    #print key
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            return False
 
-    if key != -1:
-        pid.enabled = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                return False
+            pid.enabled = False
+            handle_controls(drone, event, pid)
 
-    if key == 27:  # ESC
-        return False
-    # takeoff / land
-    elif key == 13 or key == 1048586:  # return
-        drone.takeoff()
-    elif key == 32 or key == 1048608:  # space
-        drone.land()
-    # emergency
-    elif key == 127:  # backspace
-        drone.reset()
-    # forward / backward
-    elif key == ord('w'):
-        drone.move_forward()
-    elif key == ord('s'):
-        drone.move_backward()
-    # left / right
-    elif key == ord('a'):
-        drone.move_left()
-    elif key == ord('d'):
-        drone.move_right()
-    # up / down
-    elif key == 63232:  # up
-        drone.move_up()
-    elif key == 63233:  # down
-        drone.move_down()
-    # turn left / turn right
-    elif key == 63234:  # left
-        drone.turn_left()
-    elif key == 63235:  # right
-        drone.turn_right()
-    # speed
-    elif key == ord('1'):
-        drone.speed = 0.1
-    elif key == ord('2'):
-        drone.speed = 0.2
-    elif key == ord('3'):
-        drone.speed = 0.3
-    elif key == ord('4'):
-        drone.speed = 0.4
-    elif key == ord('5'):
-        drone.speed = 0.5
-    elif key == ord('6'):
-        drone.speed = 0.6
-    elif key == ord('7'):
-        drone.speed = 0.7
-    elif key == ord('8'):
-        drone.speed = 0.8
-    elif key == ord('9'):
-        drone.speed = 0.9
-    elif key == ord('0'):
-        drone.speed = 1.0
-    elif key == ord('u') or key == 1048693:
-        pid.enabled = True
+        elif event.type == pygame.KEYUP and not pid.enabled:
+            drone.hover()
 
     return True
 
@@ -100,6 +101,7 @@ def main():
     logger.info('Starting up')
     drone = libardrone.ARDrone(True)
     drone.reset()
+    pygame.init()
     running = True
 
     pid = PIDControllerExecutor(drone)

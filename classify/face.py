@@ -26,12 +26,12 @@ class FaceClassifier(object):
 
             # query DIGITS REST API for classification
             response = requests.post(
-                'http://localhost:5000/models/images/classification/classify_one.json?job_id=20160811-114123-cf80',
+                'http://localhost:5000/classify',
                 files=files)
 
             print response.json()
 
-            predictions = response.json()['predictions']
+            predictions = response.json()['prediction']
 
             print predictions
 
@@ -40,4 +40,7 @@ class FaceClassifier(object):
                 print predictions[0][0]
                 cv2.putText(output_image, predictions[0][0], (x + w + 5, y + h + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255)
 
-        return faces[0] if len(faces) > 0 else None
+                if predictions[0][0] == 'magnus' or predictions[0][0] == 'jakob':
+                    return x, y, w, h
+
+        return None

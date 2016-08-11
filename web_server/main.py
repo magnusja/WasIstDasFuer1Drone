@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 # Load the model and images
 net = get_net(sys.argv[1], sys.argv[2], True)
-transformer = get_transformer(sys.argv[2], None)
+transformer = get_transformer(sys.argv[2], sys.argv[4])
 _, channels, height, width = transformer.inputs['data']
 if channels == 3:
     mode = 'RGB'

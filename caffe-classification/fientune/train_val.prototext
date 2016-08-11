@@ -1,39 +1,18 @@
 name: "CaffeNet"
 layer {
   name: "data"
-  type: "Data"
+  type: "Input"
   top: "data"
-  top: "label"
-  include {
-    phase: TRAIN
-  }
-  transform_param {
-    mirror: true
-    crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
-  }
-# mean pixel / channel-wise mean instead of mean image
-#  transform_param {
-#    crop_size: 227
-#    mean_value: 104
-#    mean_value: 117
-#    mean_value: 123
-#    mirror: true
-#  }
-  data_param {
-    #source: "examples/imagenet/ilsvrc12_train_lmdb"
-    batch_size: 256
-    #backend: LMDB
-  }
+  input_param { shape: { dim: 10 dim: 3 dim: 227 dim: 227 } }
 }
 layer {
   name: "data"
   type: "Data"
   top: "data"
   top: "label"
-  include {
-    phase: TEST
-  }
+  #include {
+  #  phase: TEST
+  #}
   transform_param {
     mirror: false
     crop_size: 227
@@ -114,11 +93,11 @@ layer {
   bottom: "norm1"
   top: "conv2"
   param {
-    lr_mult: 0.25
+    lr_mult: 0
     decay_mult: 1
   }
   param {
-    lr_mult: 1
+    lr_mult: 0
     decay_mult: 0
   }
   convolution_param {
@@ -170,11 +149,11 @@ layer {
   bottom: "norm2"
   top: "conv3"
   param {
-    lr_mult: 0.25
+    lr_mult: 0
     decay_mult: 1
   }
   param {
-    lr_mult: 1
+    lr_mult: 0
     decay_mult: 0
   }
   convolution_param {
@@ -203,11 +182,11 @@ layer {
   bottom: "conv3"
   top: "conv4"
   param {
-    lr_mult: 0.5
+    lr_mult: 0
     decay_mult: 1
   }
   param {
-    lr_mult: 1
+    lr_mult: 0
     decay_mult: 0
   }
   convolution_param {
@@ -237,11 +216,11 @@ layer {
   bottom: "conv4"
   top: "conv5"
   param {
-    lr_mult: 0.5
+    lr_mult: 0.3
     decay_mult: 1
   }
   param {
-    lr_mult: 1
+    lr_mult: 0.8
     decay_mult: 0
   }
   convolution_param {
@@ -282,11 +261,11 @@ layer {
   bottom: "pool5"
   top: "fc6"
   param {
-    lr_mult: 2
+    lr_mult: 1.5
     decay_mult: 1
   }
   param {
-    lr_mult: 4
+    lr_mult: 2
     decay_mult: 0
   }
   inner_product_param {
@@ -322,11 +301,11 @@ layer {
   bottom: "fc6"
   top: "fc7"
   param {
-    lr_mult: 2
+    lr_mult: 1.5
     decay_mult: 1
   }
   param {
-    lr_mult: 4
+    lr_mult: 3
     decay_mult: 0
   }
   inner_product_param {
@@ -381,15 +360,14 @@ layer {
     }
   }
 }
+
 layer {
   name: "accuracy"
   type: "Accuracy"
   bottom: "fc8_finetune"
   bottom: "label"
   top: "accuracy"
-  include {
-    phase: TEST
-  }
+  include { stage: "val" }
 }
 layer {
   name: "loss"
@@ -397,4 +375,12 @@ layer {
   bottom: "fc8_finetune"
   bottom: "label"
   top: "loss"
+  exclude { stage: "deploy" }
+}
+layer {
+  name: "softmax"
+  type: "Softmax"
+  bottom: "fc8_finetune"
+  top: "softmax"
+  include { stage: "deploy" }
 }

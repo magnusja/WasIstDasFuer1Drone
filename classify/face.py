@@ -16,7 +16,7 @@ class FaceClassifier(object):
             image = input_image[y:y+h, x:x+w]
 
             enc = Image.fromarray(np.roll(image, 1, axis=-1))
-            enc.save('/Users/magnusja/Downloads/aasdasd/' + ''.join(random.choice(string.hexdigits) for _ in range(12)) + '.jpg', "JPEG")
+            #enc.save('/Users/magnusja/Downloads/aasdasd/' + ''.join(random.choice(string.hexdigits) for _ in range(12)) + '.jpg', "JPEG")
 
             f = BytesIO()
             enc.save(f, "JPEG")
@@ -26,7 +26,7 @@ class FaceClassifier(object):
 
             # query DIGITS REST API for classification
             response = requests.post(
-                'http://localhost:5000/classify',
+                'http://localhost:5001/classify',
                 files=files)
 
             print response.json()

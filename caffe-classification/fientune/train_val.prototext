@@ -21,9 +21,9 @@ layer {
 #    mirror: true
 #  }
   data_param {
-    source: "examples/imagenet/ilsvrc12_train_lmdb"
+    #source: "examples/imagenet/ilsvrc12_train_lmdb"
     batch_size: 256
-    backend: LMDB
+    #backend: LMDB
   }
 }
 layer {
@@ -48,9 +48,9 @@ layer {
 #    mirror: false
 #  }
   data_param {
-    source: "examples/imagenet/ilsvrc12_val_lmdb"
+    #source: "examples/imagenet/ilsvrc12_val_lmdb"
     batch_size: 50
-    backend: LMDB
+    #backend: LMDB
   }
 }
 layer {
@@ -59,11 +59,11 @@ layer {
   bottom: "data"
   top: "conv1"
   param {
-    lr_mult: 1
+    lr_mult: 0
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 0
     decay_mult: 0
   }
   convolution_param {
@@ -114,11 +114,11 @@ layer {
   bottom: "norm1"
   top: "conv2"
   param {
-    lr_mult: 1
+    lr_mult: 0.25
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 1
     decay_mult: 0
   }
   convolution_param {
@@ -170,11 +170,11 @@ layer {
   bottom: "norm2"
   top: "conv3"
   param {
-    lr_mult: 1
+    lr_mult: 0.25
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 1
     decay_mult: 0
   }
   convolution_param {
@@ -203,11 +203,11 @@ layer {
   bottom: "conv3"
   top: "conv4"
   param {
-    lr_mult: 1
+    lr_mult: 0.5
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 1
     decay_mult: 0
   }
   convolution_param {
@@ -237,11 +237,11 @@ layer {
   bottom: "conv4"
   top: "conv5"
   param {
-    lr_mult: 1
+    lr_mult: 0.5
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 1
     decay_mult: 0
   }
   convolution_param {
@@ -282,11 +282,11 @@ layer {
   bottom: "pool5"
   top: "fc6"
   param {
-    lr_mult: 1
+    lr_mult: 2
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 4
     decay_mult: 0
   }
   inner_product_param {
@@ -322,11 +322,11 @@ layer {
   bottom: "fc6"
   top: "fc7"
   param {
-    lr_mult: 1
+    lr_mult: 2
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 4
     decay_mult: 0
   }
   inner_product_param {
@@ -362,11 +362,11 @@ layer {
   bottom: "fc7"
   top: "fc8_finetune"
   param {
-    lr_mult: 1
+    lr_mult: 3
     decay_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 6
     decay_mult: 0
   }
   inner_product_param {

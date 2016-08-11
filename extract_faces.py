@@ -30,7 +30,7 @@ def main():
             count += 1
             cropped_image = image[y:y+h,x:x+w]
             print 'Read a new frame: ', success
-            cv2.imwrite(output_dir + "/frameA%d.jpg" % count, cropped_image)     # save frame as JPEG file
+            cv2.imwrite(output_dir + "/frameE%d.jpg" % count, cropped_image)     # save frame as JPEG file
 
 if __name__ == '__main__':
     main()

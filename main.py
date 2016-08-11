@@ -8,6 +8,7 @@ import pygame
 import libardrone.libardrone
 from classify.face import FaceClassifier
 from cvface.detect import FaceDetector
+from cvface.sanitizer import TrackSanitizer
 from overlay.battery import BatteryOverlay
 from pid.controller import PIDControllerExecutor
 from pipeline import Pipeline
@@ -109,6 +110,7 @@ def main():
     pipeline = Pipeline([BatteryOverlay(drone),
                          FaceDetector(),
                          FaceClassifier(),
+                         TrackSanitizer(),
                          pid])
 
     while running:

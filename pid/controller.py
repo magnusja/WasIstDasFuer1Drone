@@ -2,6 +2,8 @@ from datetime import datetime
 
 import math
 
+import cv2
+
 from libardrone import at_pcmd
 
 
@@ -38,7 +40,7 @@ class PIDControllerExecutor(object):
         self.y_max = PIDController().tick(self.height, self.middle_y)
 
         self.z_pid = PIDController(kp=0.3, kd=0.2, ki=0.08)
-        self.z_opt = self.height / 8.0
+        self.z_opt = self.height / 4.0
         self.z_max = self.height
 
         self.enabled = False
@@ -62,13 +64,16 @@ class PIDControllerExecutor(object):
         face_x, face_y, face_w, face_h = face
         face_middle_x = face_x + face_w / 2
         face_middle_y = face_y + face_h / 2
+        cv2.rectangle(output_image, (face_x, face_y), (face_x + face_w, face_y + face_h), (0, 255, 0), 2)
 
         u_face_x = self.x_pid.tick(face_middle_x, self.middle_x) / self.x_max
         u_face_y = self.y_pid.tick(face_middle_y, self.middle_y) / self.y_max
         u_face_z = self.z_pid.tick(face_h, self.z_opt) / self.z_max
         print u_face_x, u_face_y, u_face_z
+        cv2.putText(output_image, '%f %f %f' % (u_face_x, u_face_y, u_face_z),
+                    (self.height - 15, self.width - 15), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
 
         if math.fabs(face_middle_x - self.middle_x) > 100:
             self.drone.at(at_pcmd, True, 0, 0, u_face_y * -0.8, u_face_x * 0.3)
         else:
-            self.drone.at(at_pcmd, True, 0, -u_face_z * 5, u_face_y * -0.8, 0)
+            self.drone.at(at_pcmd, True, 0, -u_face_z * 2, u_face_y * -0.8, 0)

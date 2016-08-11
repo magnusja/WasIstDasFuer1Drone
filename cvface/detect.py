@@ -6,7 +6,7 @@ import cv2
 class FaceDetector(object):
 
     def __init__(self):
-        self.face_cascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__), 'haarcascade_frontalface_default.xml'))
+        self.face_cascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__), 'haarcascade_frontalface_alt.xml'))
         self.eye_cascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__), 'haarcascade_eye.xml'))
 
     def run(self, input_image, output_image, exec_result=None):
@@ -18,8 +18,8 @@ class FaceDetector(object):
         faces = self.face_cascade.detectMultiScale(
             gray,
             scaleFactor=1.1,
-            minNeighbors=5,
-            minSize=(10, 10),
+            minNeighbors=6,
+            minSize=(30, 30),
             flags=cv2.cv.CV_HAAR_SCALE_IMAGE
         )
 

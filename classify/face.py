@@ -1,5 +1,5 @@
-import random
-import string
+import math
+
 
 import cv2
 from datetime import datetime
@@ -8,7 +8,6 @@ from PIL import Image
 from io import BytesIO
 
 import numpy as np
-
 
 
 class FaceClassifier(object):
@@ -24,9 +23,31 @@ class FaceClassifier(object):
         millis += diff.microseconds / 1000
         return millis
 
+    def track_face(self, faces):
+        if faces is None:
+            return None
+
+        current_min = faces[0]
+        for (face_x, face_y, face_w, face_h) in faces:
+            face_middle_x = face_x + face_w / 2
+            face_middle_y = face_y + face_h / 2
+
+            current_min_x, current_min_y, current_min_w, current_min_h = current_min
+            current_min_middle_x = current_min_x + current_min_w / 2
+            current_min_middle_y = current_min_y + current_min_h / 2
+
+            last_face_x, last_face_y, last_face_w, last_face_h = self.last_face
+            last_face_middle_x = last_face_x + last_face_w / 2
+            last_face_middle_y = last_face_y + last_face_h / 2
+
+            if math.fabs(face_middle_x - last_face_middle_x) < math.fabs(current_min_middle_x - last_face_middle_x) and \
+                math.fabs(face_middle_y - last_face_middle_y) < math.fabs(current_min_middle_y - last_face_middle_y):
+                current_min = (face_x, face_y, face_w, face_h)
+
     def run(self, input_image, output_image, faces):
         self.counter += 1
-        #if self.counter % 2 == 1: return self.last_face
+        if self.counter % 2 == 1:
+            return self.track_face(faces)
         for (x, y, w, h) in faces:
             image = input_image[y:y+h, x:x+w]
 

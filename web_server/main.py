@@ -6,7 +6,7 @@ import sys
 from flask import Flask, jsonify
 from flask import request
 
-from web_server.example import get_net, get_transformer, load_image, forward_pass, read_labels
+from example import get_net, get_transformer, load_image, forward_pass, read_labels
 
 app = Flask(__name__)
 
@@ -66,4 +66,4 @@ def hello():
     return 'hello'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5001)

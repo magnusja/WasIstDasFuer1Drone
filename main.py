@@ -92,7 +92,7 @@ def handle_events(drone, pid):
 def display_cv(drone, pipeline):
     pixelarray = drone.get_image()
     if pixelarray is not None:
-        image = cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
+        image = cv2.imread('/Users/magnusja/Downloads/13935079_1482213655137650_5032207808350932421_n.jpg') #cv2.cvtColor(pixelarray, cv2.COLOR_BGR2RGB)
         output_image = image.copy()
         pipeline.run(image, output_image)
         cv2.imshow('image', output_image)
@@ -110,8 +110,9 @@ def main():
     pipeline = Pipeline([BatteryOverlay(drone),
                          FaceDetector(),
                          FaceClassifier(),
-                         TrackSanitizer(),
-                         pid])
+                         #TrackSanitizer(),
+                         #pid])
+                            ])
 
     while running:
         display_cv(drone, pipeline)

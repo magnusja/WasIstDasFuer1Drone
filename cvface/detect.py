@@ -17,9 +17,9 @@ class FaceDetector(object):
 
         faces = self.face_cascade.detectMultiScale(
             gray,
-            scaleFactor=1.3,
-            minNeighbors=6,
-            minSize=(30, 30),
+            scaleFactor=1.1,
+            minNeighbors=3,
+            minSize=(5, 5),
             flags=cv2.cv.CV_HAAR_SCALE_IMAGE
         )
 

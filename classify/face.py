@@ -48,8 +48,8 @@ class FaceClassifier(object):
 
     def run(self, input_image, output_image, faces):
         self.counter += 1
-        if self.counter % 2 == 0:
-            return self.track_face(faces)
+        #if self.counter % 2 == 0:
+        #    return self.track_face(faces)
         for (x, y, w, h) in faces:
             image = input_image[y:y+h, x:x+w]
 
@@ -65,7 +65,7 @@ class FaceClassifier(object):
             time = datetime.now()
             # query DIGITS REST API for classification
             response = requests.post(
-                'http://localhost:5001/classify',
+                'http://mydocker:5001/classify',
                 files=files)
 
             print 'classy time %f' % self.millis_interval(time, datetime.now())
@@ -77,13 +77,17 @@ class FaceClassifier(object):
             print predictions
 
             # only label shape if over 90%
-            if predictions[0][1] > 90:
+            if predictions[0][1] > 95:
                 print predictions[0][0]
-                cv2.putText(output_image, predictions[0][0], (x + w + 5, y + h + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255)
+                name = predictions[0][0] if not predictions[0][0][-1] == '2' else predictions[0][0][0:-1]
+                cv2.putText(output_image, name, (x - 5, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.3, 255)
 
-                if predictions[0][0] == 'magnus' or predictions[0][0] == 'jakob' or \
-                   predictions[0][0] == 'magnus2' or predictions[0][0] == 'jakob2':
-                    self.last_face = (x, y, w, h)
-                    return x, y, w, h
+                #if predictions[0][0] == 'magnus' or predictions[0][0] == 'jakob' or \
+                #   predictions[0][0] == 'magnus2' or predictions[0][0] == 'jakob2':
+                #    self.last_face = (x, y, w, h)
+                #    return x, y, w, h
+
+
+        cv2.imwrite('/Users/magnusja/Downloads/13935079_1482213655137650_5032207808350932421_n22.jpg', output_image)
 
         return None

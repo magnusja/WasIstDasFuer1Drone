@@ -24,7 +24,7 @@ class FaceClassifier(object):
         return millis
 
     def track_face(self, faces):
-        if faces is None:
+        if len(faces) == 0 or self.last_face is None:
             return None
 
         current_min = faces[0]
@@ -44,9 +44,11 @@ class FaceClassifier(object):
                 math.fabs(face_middle_y - last_face_middle_y) < math.fabs(current_min_middle_y - last_face_middle_y):
                 current_min = (face_x, face_y, face_w, face_h)
 
+        return current_min
+
     def run(self, input_image, output_image, faces):
         self.counter += 1
-        if self.counter % 2 == 1:
+        if self.counter % 2 == 0:
             return self.track_face(faces)
         for (x, y, w, h) in faces:
             image = input_image[y:y+h, x:x+w]

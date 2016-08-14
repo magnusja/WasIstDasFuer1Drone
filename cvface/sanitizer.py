@@ -11,7 +11,7 @@ class TrackSanitizer(object):
 
     def run(self, input_image, output_image, face):
         if self.last_face is None:
-            if self.counter >= 5:
+            if self.counter >= 3:
                 self.last_face = face
                 self.counter = 0
                 return face
@@ -21,7 +21,7 @@ class TrackSanitizer(object):
             return None
 
         if face is None:
-            if self.counter >= 5:
+            if self.counter >= 3:
                 self.last_face = None
                 self.counter = 0
                 return None
@@ -39,7 +39,7 @@ class TrackSanitizer(object):
 
         if math.fabs(face_middle_x - last_face_middle_x) > THRESHOLD and \
            math.fabs(face_middle_y - last_face_middle_y) > THRESHOLD and \
-           self.counter <= 5:
+           self.counter <= 3:
             self.counter += 1
             return self.last_face
 

@@ -39,8 +39,8 @@ class PIDControllerExecutor(object):
         self.y_pid = PIDController(kp=0.1, kd=0.2, ki=0.1)
         self.y_max = PIDController().tick(self.height, self.middle_y)
 
-        self.z_pid = PIDController(kp=0.4, kd=0.3, ki=0.18)
-        self.z_opt = self.height / 5.0
+        self.z_pid = PIDController(kp=0.6, kd=0.5, ki=0.3)
+        self.z_opt = self.height / 4.0
         self.z_max = self.height
 
         self.enabled = False
@@ -74,6 +74,6 @@ class PIDControllerExecutor(object):
                     (self.height - 30, self.width - 30), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
 
         if math.fabs(face_middle_x - self.middle_x) > 80:
-            self.drone.at(at_pcmd, True, 0, -u_face_z * 0.5, u_face_y * -0.8, u_face_x * 0.6)
+            self.drone.at(at_pcmd, True, 0, -u_face_z * 0.7, u_face_y * -0.8, u_face_x * 0.6)
         else:
-            self.drone.at(at_pcmd, True, 0, -u_face_z * 1.5, u_face_y * -0.8, u_face_x * 0.2)
+            self.drone.at(at_pcmd, True, 0, -u_face_z * 2.5, u_face_y * -0.8, u_face_x * 0.2)

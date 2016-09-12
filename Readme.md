@@ -20,7 +20,13 @@ Finally, having detected an authorized face with a distinct bounding box, the dr
 
 ## Usage
 
-Hier könnten wir noch kurz in 2-3 Sätzen beschreiben wie man das Programm startet. Ich weiß aber nicht wie detailliert das sein muss..
+Dependencies:
+* pygame
+* python-opencv
+
+Start the webserver located in folder webserver/ on localhost or somewhere remote where classification takes place. Then route http traffic via SSH, for instance.
+
+Then just start main.py, wait until you get a camera stream and try steering.
 
 
 ## Steering

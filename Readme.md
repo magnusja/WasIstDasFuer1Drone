@@ -27,8 +27,8 @@ Hier könnten wir noch kurz in 2-3 Sätzen beschreiben wie man das Programm star
 
 The code allows manual steering at any time. The commands are as follows:
 
-| Key | Action |
-----------------
+Key | Action
+--- | ------
 RETURN | Takeoff
 SPACE | Land
 BACKSPACE | Emergency landing (Do not use)

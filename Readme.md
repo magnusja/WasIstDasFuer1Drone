@@ -24,7 +24,7 @@ Dependencies:
 * pygame
 * python-opencv
 
-Start the webserver located in folder webserver/ on localhost or somewhere remote where classification takes place. Then route http traffic via SSH, for instance.
+Start the webserver located in folder webserver/ on localhost or somewhere remote where classification takes place. Then route http traffic via SSH, for instance. A working caffe model you can use to start the server is also in the directory. 
 
 Then just start main.py, wait until you get a camera stream and try steering.
 
